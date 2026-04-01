@@ -19,7 +19,7 @@ public class DialogRowData
     public string characterName;
     public string text;
     public int? nextId;
-    public string protraitPath; // 오타 수정: protrailtPath -> protraitPath (두 번째 스크립트 기준)
+    public string portraitPath; // 오타 수정: protrailtPath -> protraitPath (두 번째 스크립트 기준)
     public string choiceText;
     public int? choiceNextId;
 }
@@ -187,12 +187,12 @@ public class JsonToScriptableConverter : EditorWindow
                 dialogSO.text = rowData.text;
                 dialogSO.nextId = rowData.nextId.HasValue ? rowData.nextId.Value : -1;
                 // 4. portraitPath 필드 대입 추가
-                dialogSO.portraitPath = rowData.protraitPath;
+                dialogSO.portraitPath = rowData.portraitPath;
                 dialogSO.choices = new List<DialogChoiceSO>();
 
-                if (!string.IsNullOrEmpty(rowData.protraitPath))
+                if (!string.IsNullOrEmpty(rowData.portraitPath))
                 {
-                    dialogSO.portrait = Resources.Load<Sprite>(rowData.protraitPath);
+                    dialogSO.portrait = Resources.Load<Sprite>(rowData.portraitPath);
                     if (dialogSO.portrait == null)
                     {
                         Debug.LogWarning($"대화 {rowData.id}의 초상화를 찾을 수 없습니다.");
