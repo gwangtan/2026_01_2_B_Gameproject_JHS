@@ -12,7 +12,7 @@ public class CardDisplay : MonoBehaviour
     public TextMeshPro attackText;
     public TextMeshPro descriptionText;
 
-    private bool isDragging = false;
+    public bool isDragging = false;
     private Vector3 originalPosition;
 
     public LayerMask enemyLayer;
@@ -23,6 +23,8 @@ public class CardDisplay : MonoBehaviour
     {
         playerLayer = LayerMask.GetMask("Player");
         enemyLayer = LayerMask.GetMask("Enemy");
+
+        SetupCard(cardData);
     }
 
     private void OnMouseDown()
@@ -63,7 +65,13 @@ public class CardDisplay : MonoBehaviour
 
     private void OnMouseUp()
     {
-        isDragging = false;
+
+        if (CardManager.Instance.playerStats == null || CardManager.Instance.playerStats.currentMana < cardData.manaCost)  //마나 검사
+        {
+            Debug.Log($"마나가 부족합니다.! (필요 : {cardData.manaCost} , 현재 : {CardManager.Instance.playerStats.currentMana} )");
+            transform.position = originalPosition;
+            return;
+        }
 
         //레이캐스트로 타겟 감지
         RaycastHit hit;
@@ -110,15 +118,34 @@ public class CardDisplay : MonoBehaviour
                 }
             }
         }
+        else if (CardManager.Instance != null)
+        {
+            //버린 카드 더미 근처에 드롭 했는지 검사
+            float distToDiscard = Vector3.Distance(transform.position, CardManager.Instance.discardPosition.position);
+            if (distToDiscard < 2.0f)
+            {
+                //카드를 버리기
+                CardManager.Instance.DiscardCard(cardIndex);
+                return;
+            }
+        }
 
         //카드를 사용하지 않으면 원래 위치로 되돌리기
         if (!cardUsed)
         {
             transform.position = originalPosition;
+            CardManager.Instance.ArrangeHand();
         }
         else
         {
-            Destroy(gameObject);
+            //카드를 사용했다면 버린 카드 더미로 이동
+            if (CardManager.Instance != null)
+            {
+                CardManager.Instance.DiscardCard(cardIndex);
+            }
+
+            CardManager.Instance.playerStats.UseMana(cardData.manaCost);
+            Debug.Log($"마나를 {cardData.manaCost} 사용 했습니다.");
         }
     }
 }
