@@ -15,7 +15,7 @@ public class CardManager : MonoBehaviour
     public List<GameObject> cardObjects = new List<GameObject>(); // 실제 카드 게임 오브젝트들
 
     public CharacterStat playerStats;
-
+    public CharacterStat EnemyStats;
     private static CardManager instance;
 
     public static CardManager Instance
